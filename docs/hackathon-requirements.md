@@ -39,7 +39,7 @@ Do not infer these missing requirements from earlier hackathon rounds. The proje
 
 These are project goals, not quoted contest rules:
 
-- At least 3,000 authored MoonBit source lines across runtime, examples, and tests, without padding; current physical `.mbt` line count is reported in the final local audit.
+- At least 3,000 authored MoonBit source lines across runtime, examples, and tests, without padding; the local audit records 4,128 physical `.mbt` lines and 3,348 nonblank, non-comment source lines.
 - More than ten meaningful commits by the actual contributor, with the account author `Zcxssxx`; no empty or manufactured commits.
 - Four supported MoonBit backends in the local test matrix, a warning-denying CI workflow, and a real native demo.
 - Clear disclosure of OpenFeature-inspired behavior and unsupported areas; no unsupported claim of full conformance.

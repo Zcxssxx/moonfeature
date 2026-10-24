@@ -69,3 +69,9 @@
 - The supplied formal charter and supplemental Feishu pages could not be read through the available public browser reader. Exact cutoff time, update time, accepted hosting platforms, Mooncakes/CI/toolchain mandates, and detailed review/modification rules are marked `待确认` rather than inferred from prior events.
 - Added a rules matrix and project-description draft. The public repository URL will be filled only after local acceptance and the current GitHub account check.
 - `LICENSE` now identifies `Zcxssxx` as the 2026 copyright holder above the unmodified Apache-2.0 license text. The proposal is a one-page-formatted Markdown draft; the official material retrieved says one-page description, not that PDF is mandatory.
+
+## 2026-10-25 — Task 9: final local acceptance
+- Re-ran `moon version --all`, `moon fmt --check`, root/local all-target warning-denying checks, tests, and builds, the native demo, root/local `moon info`, and Git diff/worktree checks. Every command exited 0 except the separately documented local registry update limitation.
+- Results: root 33/33 tests and local provider 6/6 tests on each of wasm, wasm-gc, JS, and native; all-target build/check succeeded; `moon info` caused no diff; final working tree was clean.
+- Audit: 11 meaningful commits, all authored/committed as `Zcxssxx`; local branch `main`, no remote; 25 `.mbt` files with 4,128 physical lines / 3,348 nonblank non-comment code lines. Full details and remaining items are in `docs/local-acceptance.md`.
+- Local acceptance gates are complete. Remote operations remain pending only the live GitHub CLI identity check; the supplied screenshot shows `Zcxssxx`, but it does not replace the required current-session check.
