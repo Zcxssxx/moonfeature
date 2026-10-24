@@ -1,11 +1,74 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Zcxssxx/moonfeature"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 
 // Errors
 
 // Types and methods
+pub(all) enum ErrorCode {
+  FlagNotFound
+  TypeMismatch
+  InvalidContext
+  ProviderNotReady
+  ProviderFailure
+  InvalidConfiguration
+  HookFailure
+} derive(Eq, @debug.Debug)
+pub fn ErrorCode::equal(Self, Self) -> Bool
+pub fn ErrorCode::not_equal(Self, Self) -> Bool
+pub fn ErrorCode::to_repr(Self) -> @debug.Repr
+
+pub struct EvaluationContext {
+  targeting_key : String?
+  attributes : Map[String, FlagValue]
+}
+pub fn EvaluationContext::empty() -> Self
+pub fn EvaluationContext::get_attribute(Self, String) -> FlagValue?
+pub fn EvaluationContext::merge(Self, Self) -> Self
+pub fn EvaluationContext::targeting_key(Self) -> String?
+pub fn EvaluationContext::with_attribute(Self, String, FlagValue) -> Self
+pub fn EvaluationContext::with_targeting_key(Self, String) -> Self
+
+pub struct EvaluationError {
+  code : ErrorCode
+  message : String
+} derive(Eq, @debug.Debug)
+pub fn EvaluationError::code(Self) -> ErrorCode
+pub fn EvaluationError::equal(Self, Self) -> Bool
+pub fn EvaluationError::message(Self) -> String
+pub fn EvaluationError::new(ErrorCode, String) -> Self
+pub fn EvaluationError::not_equal(Self, Self) -> Bool
+pub fn EvaluationError::to_repr(Self) -> @debug.Repr
+
+pub(all) enum FlagValue {
+  Boolean(Bool)
+  Number(Double)
+  String(String)
+  Json(Json)
+} derive(Eq, @debug.Debug)
+pub fn FlagValue::as_boolean(Self) -> Bool?
+pub fn FlagValue::as_json(Self) -> Json?
+pub fn FlagValue::as_number(Self) -> Double?
+pub fn FlagValue::as_string(Self) -> String?
+pub fn FlagValue::equal(Self, Self) -> Bool
+pub fn FlagValue::not_equal(Self, Self) -> Bool
+pub fn FlagValue::to_repr(Self) -> @debug.Repr
+pub fn FlagValue::value_type(Self) -> ValueType
+
+pub(all) enum ValueType {
+  Boolean
+  Number
+  String
+  Json
+} derive(Eq, @debug.Debug)
+pub fn ValueType::equal(Self, Self) -> Bool
+pub fn ValueType::not_equal(Self, Self) -> Bool
+pub fn ValueType::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

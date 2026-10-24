@@ -44,10 +44,10 @@
 
 **Files:** `value.mbt`, `context.mbt`, `errors.mbt`, matching tests.
 
-- [ ] Write tests first for each typed value, type mismatch results, context merge replacement/copy behavior, targeting-key precedence, and nested JSON preservation.
-- [ ] Run focused tests; confirm they fail because symbols are absent.
-- [ ] Implement `FlagValue`, `ValueType`, `EvaluationContext`, context merge, SDK error categories, and snapshots using compiler-confirmed APIs.
-- [ ] Run focused tests, `moon check --deny-warn`, and `moon test --deny-warn`; format and commit.
+- [x] Write tests first for each typed value, type mismatch results, context merge replacement/copy behavior, targeting-key precedence, and nested JSON preservation.
+- [x] Run focused tests; confirm they fail because symbols are absent.
+- [x] Implement `FlagValue`, `ValueType`, `EvaluationContext`, context merge, SDK error categories, and snapshots using compiler-confirmed APIs.
+- [x] Run focused tests, `moon check --deny-warn`, and `moon test --deny-warn`; format and commit.
 
 ## Task 3: Provider and resolution contract
 
@@ -133,3 +133,8 @@
 - `moon new` could not create its optional `README.md` symlink on Windows (OS error 1314). The project uses a normal `README.md` instead.
 - First `moon fmt --check` caught template formatting differences in `moon.mod` and the empty root package. Ran plain `moon fmt` (without unsupported flags) and the next format check passed.
 - Empty-module baseline: `moon check --deny-warn` passed; `moon test --deny-warn` exited successfully with 0 tests and warning “no test entry found”; `moon info` generated the expected empty `pkg.generated.mbti`.
+
+- TDD implementation slice: tests first failed on missing types, then on mutable nested JSON leakage; recursive JSON snapshotting made the targeted tests pass.
+- Compiler/tooling corrections: black-box tests use module-qualified paths; public enum construction uses pub(all); derived Eq/Debug methods are explicitly extended; empty maps use Map([]) to keep deny-warn clean.
+- moon ide doc still fails with “no metadata is available for any backend” inside this module. Verified JSON/Map/Debug signatures against installed stable core source; implementation uses the published API rather than copying core code.
+- Cross-target result: moon fmt --check passed; moon check --target all --deny-warn passed; moon test --target all --deny-warn passed 7/7 on wasm, wasm-gc, JS, and native; moon info --target all generated an intentional public-interface update.

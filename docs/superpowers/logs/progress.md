@@ -8,3 +8,10 @@
 - First `moon fmt --check` failed because of generated metadata formatting. Ran `moon fmt`, then `moon fmt --check` passed.
 - Verification: `moon check --deny-warn` passed. `moon test --deny-warn` reported zero tests because no behavior code exists yet. `moon info` succeeded and generated an empty public interface.
 - Local Git: unborn `main`, no remote, author config `Zcxssxx <298122762+Zcxssxx@users.noreply.github.com>`.
+
+## 2026-10-25 — Task 2: typed values, contexts, and errors
+- Added FlagValue and ValueType for Boolean, Number, String, and JSON; added typed accessors and structured ErrorCode / EvaluationError.
+- Added explicit-context construction, immutable-by-interface updates, context precedence merge, and recursive JSON snapshots on insertion, merge, and access.
+- TDD evidence: missing APIs failed first; a JSON mutation test then failed because returned nested object changed the stored context; recursive copying fixed it.
+- Toolchain evidence: moon fmt --check passed; moon check --target all --deny-warn passed; moon test --target all --deny-warn passed 7/7 each on wasm, wasm-gc, js, and native; moon info --target all updated the reviewed public API.
+- Tooling notes: moon ide doc cannot load core metadata in this environment; inspected the installed stable core source for Json, Map, and Debug APIs. No upstream code was copied. Initial formatting found ambiguous empty map literals; replaced them with Map([]) and reran the gates successfully.
