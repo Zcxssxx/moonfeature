@@ -28,4 +28,6 @@ moonrun 0.1.20261023 (3778465 2026-10-23)
 
 The remote log confirms `moon update` completed, root tests passed 33/33 on wasm, wasm-gc, JS, and native, and local-provider tests passed 6/6 on those same targets. All-target builds, the native demo, `moon info`, and the generated-interface clean-tree check completed successfully.
 
-The first run also reported that `actions/checkout@v4` was forced to Node 24 after Node 20 retirement. The local workflow has since been changed to pin the signed `actions/checkout` v7.0.1 release commit. That revised workflow still requires a new hosted run before the updated action is considered verified.
+The first run reported that `actions/checkout@v4` was forced to Node 24 after Node 20 retirement. The workflow was changed to pin the signed `actions/checkout` v7.0.1 release commit. Follow-up run [40114983566](https://github.com/Zcxssxx/moonfeature/actions/runs/40114983566) completed successfully for head `fc8a3d6173e84c4e30221154b9e720dc448ddf93`; it passed `moon update`, the same 33/33 and 6/6 four-target tests, all-target builds, the demo, and generated-interface cleanliness. Its log had no Node 20 warning.
+
+GitHub added an annotation that `ubuntu-latest` was migrating to Ubuntu 26. The workflow now pins `ubuntu-24.04`, the OS actually used by the passing hosted runs, to keep the next validation stable during that migration. The pinned-runner revision is pending a new hosted run.
