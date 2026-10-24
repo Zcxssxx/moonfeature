@@ -250,3 +250,30 @@ test "retired providers are unsubscribed and stop routing events" {
   assert_eq(api.shutdown(), Ok(()))
   assert_eq(new_provider.listener_count(), 0)
 }
+
+///|
+test "event details identify the provider and preserve error metadata" {
+  let api = @moonfeature.Api::new()
+  let provider = event_provider("event-metadata", "value")
+  let provider_object : &@moonfeature.Provider = provider
+    as &@moonfeature.Provider
+  assert_eq(api.set_provider(provider_object), Ok(()))
+  let provider_name : @ref.Ref[String?] = @ref.Ref(None)
+  let event_error : @ref.Ref[@moonfeature.ErrorCode?] = @ref.Ref(None)
+  let _ = api.add_event_handler(fn(event) {
+    provider_name.val = event.provider_name()
+    event_error.val = event.error_code()
+    Ok(())
+  })
+  provider.emit(
+    @moonfeature.ProviderEvent::new(
+      @moonfeature.ProviderEventKind::ProviderError,
+    ).with_error(
+      @moonfeature.ErrorCode::ProviderFailure,
+      "synthetic provider event error",
+    ),
+  )
+  assert_eq(provider_name.val, Some("event-metadata"))
+  assert_eq(event_error.val, Some(@moonfeature.ErrorCode::ProviderFailure))
+  assert_eq(api.shutdown(), Ok(()))
+}

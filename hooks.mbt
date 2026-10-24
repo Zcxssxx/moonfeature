@@ -97,7 +97,7 @@ pub type ErrorHook = (HookContext, EvaluationError, Json, Json) -> Result[
 
 ///|
 /// Finally callbacks run after after/error processing.
-pub type FinallyHook = (HookContext, Json, Json) -> Result[
+pub type FinallyHook = (HookContext, ResolutionDetails, Json, Json) -> Result[
   Unit,
   EvaluationError,
 ]
@@ -147,7 +147,7 @@ pub fn Hook::with_error(self : Hook, callback : ErrorHook) -> Hook {
 }
 
 ///|
-/// Return a copy with a finally callback.
+/// Return a copy with a finally callback that observes returned details.
 pub fn Hook::with_finally(self : Hook, callback : FinallyHook) -> Hook {
   { ..self, on_finally: Some(callback), }
 }

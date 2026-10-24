@@ -129,7 +129,7 @@ pub struct Hook {
   before : ((HookContext, Json, Json) -> Result[HookBeforeResult, EvaluationError])?
   after : ((HookContext, ResolutionDetails, Json, Json) -> Result[Unit, EvaluationError])?
   error : ((HookContext, EvaluationError, Json, Json) -> Result[Unit, EvaluationError])?
-  on_finally : ((HookContext, Json, Json) -> Result[Unit, EvaluationError])?
+  on_finally : ((HookContext, ResolutionDetails, Json, Json) -> Result[Unit, EvaluationError])?
   data_factory : (() -> Json)?
 }
 pub fn Hook::new() -> Self
@@ -137,7 +137,7 @@ pub fn Hook::with_after(Self, (HookContext, ResolutionDetails, Json, Json) -> Re
 pub fn Hook::with_before(Self, (HookContext, Json, Json) -> Result[HookBeforeResult, EvaluationError]) -> Self
 pub fn Hook::with_data_factory(Self, () -> Json) -> Self
 pub fn Hook::with_error(Self, (HookContext, EvaluationError, Json, Json) -> Result[Unit, EvaluationError]) -> Self
-pub fn Hook::with_finally(Self, (HookContext, Json, Json) -> Result[Unit, EvaluationError]) -> Self
+pub fn Hook::with_finally(Self, (HookContext, ResolutionDetails, Json, Json) -> Result[Unit, EvaluationError]) -> Self
 
 pub struct HookBeforeResult {
   context_changes : EvaluationContext
@@ -160,13 +160,19 @@ pub struct ProviderEvent {
   kind : ProviderEventKind
   message : String?
   changed_flags : Array[String]
+  error_code : ErrorCode?
+  provider_name : String?
 }
 pub fn ProviderEvent::changed_flags(Self) -> Array[String]
+pub fn ProviderEvent::error_code(Self) -> ErrorCode?
 pub fn ProviderEvent::kind(Self) -> ProviderEventKind
 pub fn ProviderEvent::message(Self) -> String?
 pub fn ProviderEvent::new(ProviderEventKind) -> Self
+pub fn ProviderEvent::provider_name(Self) -> String?
 pub fn ProviderEvent::with_changed_flags(Self, Array[String]) -> Self
+pub fn ProviderEvent::with_error(Self, ErrorCode, String) -> Self
 pub fn ProviderEvent::with_message(Self, String) -> Self
+pub fn ProviderEvent::with_provider_name(Self, String) -> Self
 
 pub(all) enum ProviderEventKind {
   ProviderReady
@@ -274,7 +280,7 @@ pub type BeforeHook = (HookContext, Json, Json) -> Result[HookBeforeResult, Eval
 
 pub type ErrorHook = (HookContext, EvaluationError, Json, Json) -> Result[Unit, EvaluationError]
 
-pub type FinallyHook = (HookContext, Json, Json) -> Result[Unit, EvaluationError]
+pub type FinallyHook = (HookContext, ResolutionDetails, Json, Json) -> Result[Unit, EvaluationError]
 
 pub type HookDataFactory = () -> Json
 

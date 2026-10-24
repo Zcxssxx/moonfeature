@@ -21,12 +21,20 @@ pub struct ProviderEvent {
   kind : ProviderEventKind
   message : String?
   changed_flags : Array[String]
+  error_code : ErrorCode?
+  provider_name : String?
 }
 
 ///|
 /// Create an event with no message or changed flag list.
 pub fn ProviderEvent::new(kind : ProviderEventKind) -> ProviderEvent {
-  { kind, message: None, changed_flags: [], }
+  {
+    kind,
+    message: None,
+    changed_flags: [],
+    error_code: None,
+    provider_name: None,
+  }
 }
 
 ///|
@@ -36,6 +44,25 @@ pub fn ProviderEvent::with_message(
   message : String,
 ) -> ProviderEvent {
   { ..self, message: Some(message), changed_flags: self.changed_flags.copy(), }
+}
+
+///|
+/// Return a copy with an error category and message.
+pub fn ProviderEvent::with_error(
+  self : ProviderEvent,
+  error_code : ErrorCode,
+  message : String,
+) -> ProviderEvent {
+  { ..self, error_code: Some(error_code), message: Some(message), }
+}
+
+///|
+/// Return a copy annotated with the originating provider's metadata name.
+pub fn ProviderEvent::with_provider_name(
+  self : ProviderEvent,
+  provider_name : String,
+) -> ProviderEvent {
+  { ..self, provider_name: Some(provider_name), }
 }
 
 ///|
@@ -60,6 +87,18 @@ pub fn ProviderEvent::message(self : ProviderEvent) -> String? {
 }
 
 ///|
+/// Return the optional provider error category.
+pub fn ProviderEvent::error_code(self : ProviderEvent) -> ErrorCode? {
+  self.error_code
+}
+
+///|
+/// Return the optional originating provider name.
+pub fn ProviderEvent::provider_name(self : ProviderEvent) -> String? {
+  self.provider_name
+}
+
+///|
 /// Return a detached list of changed flag identifiers.
 pub fn ProviderEvent::changed_flags(self : ProviderEvent) -> Array[String] {
   self.changed_flags.copy()
@@ -80,6 +119,8 @@ fn ProviderEvent::snapshot(self : ProviderEvent) -> ProviderEvent {
     kind: self.kind,
     message: self.message,
     changed_flags: self.changed_flags.copy(),
+    error_code: self.error_code,
+    provider_name: self.provider_name,
   }
 }
 
@@ -191,6 +232,11 @@ fn Api::dispatch_provider_event(
   event : ProviderEvent,
 ) -> Unit {
   let state = self.state.val
+  let provider_name = match state.providers.get(provider_id) {
+    Some(entry) => entry.provider.metadata().name()
+    None => provider_id
+  }
+  let routed_event = event.with_provider_name(provider_name)
   let handlers : Array[ProviderEventHandler] = []
   for entry in state.api_event_handlers {
     handlers.push(entry.handler)
@@ -201,7 +247,7 @@ fn Api::dispatch_provider_event(
     }
   }
   for handler in handlers {
-    match handler(event.snapshot()) {
+    match handler(routed_event.snapshot()) {
       Ok(_) => ()
       Err(error) => self.record_event_handler_error(error)
     }

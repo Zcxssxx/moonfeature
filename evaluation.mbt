@@ -179,6 +179,7 @@ fn Client::resolve_with_options(
         match
           callback(
             hook_context,
+            details,
             clone_json(execution.data.val),
             clone_json(hints),
           ) {

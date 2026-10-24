@@ -151,9 +151,10 @@ fn recording_hook(
       )
     }
   })
-  .with_finally(fn(_context, data, _hints) {
+  .with_finally(fn(_context, details, data, _hints) {
     trace.val.push("finally-" + label)
-    if hook_json_string(data) == Some(next_tier) {
+    if hook_json_string(data) == Some(next_tier) &&
+      details.value().as_string() == Some("provider") {
       Ok(())
     } else {
       Err(
@@ -241,7 +242,7 @@ test "before failure skips provider and contains error hook failures" {
         ),
       )
     })
-    .with_finally(fn(_context, _data, _hints) {
+    .with_finally(fn(_context, _details, _data, _hints) {
       trace.val.push("finally-api")
       Ok(())
     })
@@ -261,7 +262,7 @@ test "before failure skips provider and contains error hook failures" {
       trace.val.push("error-client")
       Ok(())
     })
-    .with_finally(fn(_context, _data, _hints) {
+    .with_finally(fn(_context, _details, _data, _hints) {
       trace.val.push("finally-client")
       Err(
         @moonfeature.EvaluationError::new(
@@ -299,7 +300,7 @@ test "after failure stops later after hooks then runs error and finally stages" 
       trace.val.push("error-api")
       Ok(())
     })
-    .with_finally(fn(_context, _data, _hints) {
+    .with_finally(fn(_context, _details, _data, _hints) {
       trace.val.push("finally-api")
       Ok(())
     })
@@ -319,7 +320,7 @@ test "after failure stops later after hooks then runs error and finally stages" 
       trace.val.push("error-client")
       Ok(())
     })
-    .with_finally(fn(_context, _data, _hints) {
+    .with_finally(fn(_context, _details, _data, _hints) {
       trace.val.push("finally-client")
       Ok(())
     })
@@ -354,7 +355,7 @@ test "provider failure skips after hooks and unwinds error and finally hooks" {
       trace.val.push("error-api")
       Ok(())
     })
-    .with_finally(fn(_context, _data, _hints) {
+    .with_finally(fn(_context, _details, _data, _hints) {
       trace.val.push("finally-api")
       Ok(())
     })
@@ -369,7 +370,7 @@ test "provider failure skips after hooks and unwinds error and finally hooks" {
       trace.val.push("error-client")
       Ok(())
     })
-    .with_finally(fn(_context, _data, _hints) {
+    .with_finally(fn(_context, _details, _data, _hints) {
       trace.val.push("finally-client")
       Ok(())
     })
