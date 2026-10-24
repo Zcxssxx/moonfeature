@@ -131,6 +131,7 @@
 
 - `moon new . --user Zcxssxx --name moonfeature --dry-run` failed because `moon new` explicitly does not support dry-run. Switched to a temporary `_scaffold/` directory, copied only module metadata/license/ignore rules, validated them, then removed `_scaffold/` after confirming its resolved path remained under the project root.
 - `moon new` could not create its optional `README.md` symlink on Windows (OS error 1314). The project uses a normal `README.md` instead.
+- The local `moon update --verbose --trace` command reached the registry-lock step and failed with `failed to lock registry update directory` / Windows OS error 5. The module currently has no external package dependency. CI retains a `moon update` step for a fresh hosted runner; remote outcome must be verified after publication.
 - First `moon fmt --check` caught template formatting differences in `moon.mod` and the empty root package. Ran plain `moon fmt` (without unsupported flags) and the next format check passed.
 - Empty-module baseline: `moon check --deny-warn` passed; `moon test --deny-warn` exited successfully with 0 tests and warning “no test entry found”; `moon info` generated the expected empty `pkg.generated.mbti`.
 

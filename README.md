@@ -39,6 +39,8 @@ The SDK and local provider run on wasm, wasm-gc, JavaScript, and native targets 
 - [Usage and behavior](docs/usage.md)
 - [Conformance profile and known gaps](docs/conformance.md)
 - [Source and provenance](docs/sources.md)
+- [Hackathon requirements check](docs/hackathon-requirements.md)
+- [One-page project description](docs/hackathon-proposal.md)
 - [Approved design](docs/superpowers/specs/2026-10-24-openfeature-sdk-design.md)
 
 ## Local checks
