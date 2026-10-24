@@ -1,0 +1,6 @@
+import {
+  "Zcxssxx/moonfeature",
+  "Zcxssxx/moonfeature/local",
+}
+
+pkgtype(kind: "executable")

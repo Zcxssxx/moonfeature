@@ -103,19 +103,19 @@
 
 **Files:** `cmd/demo/moon.pkg`, `cmd/demo/main.mbt`, `README.md`, `docs/usage.md`, `docs/conformance.md`, `docs/sources.md`.
 
-- [ ] Add a tested scenario for a named checkout flag, percentage rollout, details, and caller-owned rule update.
-- [ ] Implement demo using public API only; run `moon run cmd/demo --target native` and record output.
-- [ ] Document usage, context precedence, errors/defaults, limitations, rollout algorithm, synchronous profile, and conformance boundaries.
-- [ ] Map in-scope OpenFeature requirements to source/tests with retrieval date and official links; list dependencies and authored fixtures/data.
-- [ ] Commit docs/demo after examples/tests pass.
+- [x] Add a tested scenario for a named checkout flag, percentage rollout, details, and caller-owned rule update.
+- [x] Implement demo using public API only; run `moon run cmd/demo --target native` and record output.
+- [x] Document usage, context precedence, errors/defaults, limitations, rollout algorithm, synchronous profile, and conformance boundaries.
+- [x] Map in-scope OpenFeature requirements to source/tests with retrieval date and official links; list dependencies and authored fixtures/data.
+- [x] Commit docs/demo after examples/tests pass.
 
 ## Task 9: CI and final local acceptance
 
 **Files:** `.github/workflows/test.yml`, docs/README refinements.
 
-- [ ] Use supplied community workflow examples to install stable MoonBit, print `moon version --all`, update packages, format, check/test/build supported targets with denied warnings, run `moon info`, and inspect generated interface diffs. Use minimum workflow permissions and checkout `persist-credentials: false`.
-- [ ] Run in order: `moon version --all`; `moon fmt --check`; `moon check --target all --deny-warn`; `moon test --target all --deny-warn`; `moon build --target all --deny-warn`; native demo; `moon info`; `git diff --check`.
-- [ ] Record target limitations from output and narrow target claims if needed; never add unsupported `--deny-warn` to `moon fmt` or `moon info`.
+- [x] Use supplied community workflow examples to install stable MoonBit, print `moon version --all`, update packages, format, check/test/build supported targets with denied warnings, run `moon info`, and inspect generated interface diffs. Use minimum workflow permissions and checkout `persist-credentials: false`.
+- [x] Run in order: `moon version --all`; `moon fmt --check`; root/local `moon check`, `moon test`, and `moon build` on all targets; native demo; root/local `moon info`; `git diff --check`.
+- [x] Record target limitations from output and narrow target claims if needed; never add unsupported `--deny-warn` to `moon fmt` or `moon info`.
 - [ ] Audit structure, README, Apache-2.0, sources/tests/data, examples, generated API, authors/history, default branch, and MoonBit LOC.
 - [ ] Record exact results and unresolved issues in `docs/superpowers/logs/`; draft the one-page October proposal. Do not claim remote repository/CI until independently checked.
 - [ ] Commit only real final CI/audit changes; proceed to GitHub after local gates pass.

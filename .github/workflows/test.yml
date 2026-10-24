@@ -1,0 +1,62 @@
+name: Test MoonFeature
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Format, check, test, and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install the stable MoonBit toolchain
+        shell: bash
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Record toolchain
+        run: moon version --all
+
+      - name: Update MoonBit package registry
+        run: moon update
+
+      - name: Check formatting
+        run: moon fmt --check
+
+      - name: Check SDK packages
+        run: |
+          moon check --target all --deny-warn
+          moon check local --target all --deny-warn
+
+      - name: Test SDK packages
+        run: |
+          moon test --target all --deny-warn
+          moon test local --target all --deny-warn
+
+      - name: Build SDK packages
+        run: |
+          moon build --target all --deny-warn
+          moon build local --target all --deny-warn
+
+      - name: Run native demo
+        run: moon run cmd/demo --target native --deny-warn
+
+      - name: Verify generated interfaces
+        run: |
+          moon info --target all
+          moon info local --target all
+          git diff --exit-code
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git status --short
+            exit 1
+          fi
