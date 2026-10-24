@@ -93,11 +93,11 @@
 
 **Files:** `local/config.mbt`, `local/matcher.mbt`, `local/rollout.mbt`, `local/provider.mbt`, provider tests.
 
-- [ ] First write tests for duplicate keys, invalid configuration, rule precedence, equality/existence predicates, typed results, missing flag, and missing rollout targeting key.
-- [ ] Freeze stable hash test vectors before implementing rollout; include bucket boundaries plus 0% and 100%.
-- [ ] Implement config validation, rule matching, documented stable hash, in-memory config replacement, and configuration-changed event.
-- [ ] Run tests on stable supported targets and compare deterministic outputs.
-- [ ] Commit validated provider behavior.
+- [x] First write tests for duplicate keys, invalid configuration, rule precedence, equality/existence predicates, typed results, missing flag, and missing rollout targeting key.
+- [x] Freeze stable hash test vectors before implementing rollout; include bucket boundaries plus 0% and 100%.
+- [x] Implement config validation, rule matching, documented stable hash, in-memory config replacement, and configuration-changed event.
+- [x] Run tests on stable supported targets and compare deterministic outputs.
+- [x] Commit validated provider behavior.
 
 ## Task 8: Consumer demo and documentation
 

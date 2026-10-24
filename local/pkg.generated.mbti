@@ -1,0 +1,79 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Zcxssxx/moonfeature/local"
+
+import {
+  "Zcxssxx/moonfeature",
+  "moonbitlang/core/ref",
+}
+
+// Values
+pub fn rollout_bucket(String, String) -> Int32
+
+// Errors
+
+// Types and methods
+pub struct Condition {
+  attribute : String
+  expected : @moonfeature.FlagValue?
+  exists_only : Bool
+}
+pub fn Condition::equals(String, @moonfeature.FlagValue) -> Self
+pub fn Condition::exists(String) -> Self
+
+pub struct Config {
+  flags : Map[String, FlagDefinition]
+}
+pub fn Config::flag_count(Self) -> Int32
+pub fn Config::new(Array[FlagDefinition]) -> Result[Self, @moonfeature.EvaluationError]
+
+pub struct FlagDefinition {
+  key : String
+  default_value : @moonfeature.FlagValue
+  rules : Array[Rule]
+  rollout : PercentageRollout?
+}
+pub fn FlagDefinition::new(String, @moonfeature.FlagValue) -> Self
+pub fn FlagDefinition::with_rollout(Self, PercentageRollout) -> Self
+pub fn FlagDefinition::with_rule(Self, Rule) -> Self
+
+pub struct LocalProvider {
+  id : String
+  state : @ref.Ref[LocalProviderState]
+}
+pub fn LocalProvider::domain_scoped(Self) -> Bool
+pub fn LocalProvider::evaluation_hooks(Self) -> Array[@moonfeature.Hook]
+pub fn LocalProvider::initialize(Self, @moonfeature.EvaluationContext, String?) -> Result[Unit, @moonfeature.EvaluationError]
+pub fn LocalProvider::instance_id(Self) -> String
+pub fn LocalProvider::metadata(Self) -> @moonfeature.ProviderMetadata
+pub fn LocalProvider::new(String, Config) -> Self
+pub fn LocalProvider::provider_metadata(Self) -> @moonfeature.ProviderMetadata
+pub fn LocalProvider::replace_config(Self, Config) -> Unit
+pub fn LocalProvider::resolve(Self, String, @moonfeature.ValueType, @moonfeature.EvaluationContext) -> Result[@moonfeature.ProviderResolution, @moonfeature.EvaluationError]
+pub fn LocalProvider::shutdown(Self) -> Result[Unit, @moonfeature.EvaluationError]
+pub fn LocalProvider::status(Self) -> @moonfeature.ProviderStatus
+pub fn LocalProvider::subscribe_events(Self, (@moonfeature.ProviderEvent) -> Unit) -> Int32
+pub fn LocalProvider::unsubscribe_events(Self, Int32) -> Unit
+pub impl @moonfeature.Provider for LocalProvider
+
+type LocalProviderState
+
+pub struct PercentageRollout {
+  percentage : Double
+  value : @moonfeature.FlagValue
+  variant : String?
+}
+pub fn PercentageRollout::new(Double, @moonfeature.FlagValue) -> Self
+pub fn PercentageRollout::with_variant(Self, String) -> Self
+
+pub struct Rule {
+  conditions : Array[Condition]
+  value : @moonfeature.FlagValue
+  variant : String?
+}
+pub fn Rule::new(@moonfeature.FlagValue) -> Self
+pub fn Rule::with_condition(Self, Condition) -> Self
+pub fn Rule::with_variant(Self, String) -> Self
+
+// Type aliases
+
+// Traits
