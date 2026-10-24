@@ -60,6 +60,62 @@ pub fn FlagValue::not_equal(Self, Self) -> Bool
 pub fn FlagValue::to_repr(Self) -> @debug.Repr
 pub fn FlagValue::value_type(Self) -> ValueType
 
+pub struct ProviderMetadata {
+  name : String
+  version : String
+} derive(Eq, @debug.Debug)
+pub fn ProviderMetadata::equal(Self, Self) -> Bool
+pub fn ProviderMetadata::name(Self) -> String
+pub fn ProviderMetadata::new(String, String) -> Self
+pub fn ProviderMetadata::not_equal(Self, Self) -> Bool
+pub fn ProviderMetadata::to_repr(Self) -> @debug.Repr
+pub fn ProviderMetadata::version(Self) -> String
+
+pub struct ProviderResolution {
+  value : FlagValue
+  variant : String?
+  reason : ResolutionReason?
+  flag_metadata : Json
+} derive(Eq, @debug.Debug)
+pub fn ProviderResolution::equal(Self, Self) -> Bool
+pub fn ProviderResolution::flag_metadata(Self) -> Json
+pub fn ProviderResolution::new(FlagValue) -> Self
+pub fn ProviderResolution::not_equal(Self, Self) -> Bool
+pub fn ProviderResolution::reason(Self) -> ResolutionReason?
+pub fn ProviderResolution::to_repr(Self) -> @debug.Repr
+pub fn ProviderResolution::value(Self) -> FlagValue
+pub fn ProviderResolution::variant(Self) -> String?
+pub fn ProviderResolution::with_flag_metadata(Self, Json) -> Self
+pub fn ProviderResolution::with_reason(Self, ResolutionReason) -> Self
+pub fn ProviderResolution::with_variant(Self, String) -> Self
+
+pub(all) enum ProviderStatus {
+  NotReady
+  Ready
+  Error
+  Fatal
+  Stale
+  Reconciling
+  Shutdown
+} derive(Eq, @debug.Debug)
+pub fn ProviderStatus::equal(Self, Self) -> Bool
+pub fn ProviderStatus::not_equal(Self, Self) -> Bool
+pub fn ProviderStatus::to_repr(Self) -> @debug.Repr
+
+pub(all) enum ResolutionReason {
+  Static
+  Default
+  TargetingMatch
+  Split
+  Cached
+  Disabled
+  Stale
+  Unknown
+} derive(Eq, @debug.Debug)
+pub fn ResolutionReason::equal(Self, Self) -> Bool
+pub fn ResolutionReason::not_equal(Self, Self) -> Bool
+pub fn ResolutionReason::to_repr(Self) -> @debug.Repr
+
 pub(all) enum ValueType {
   Boolean
   Number
@@ -73,3 +129,10 @@ pub fn ValueType::to_repr(Self) -> @debug.Repr
 // Type aliases
 
 // Traits
+pub(open) trait Provider {
+  fn metadata(Self) -> ProviderMetadata
+  fn initialize(Self, EvaluationContext, String?) -> Result[Unit, EvaluationError]
+  fn shutdown(Self) -> Result[Unit, EvaluationError]
+  fn status(Self) -> ProviderStatus
+  fn resolve(Self, String, ValueType, EvaluationContext) -> Result[ProviderResolution, EvaluationError]
+}

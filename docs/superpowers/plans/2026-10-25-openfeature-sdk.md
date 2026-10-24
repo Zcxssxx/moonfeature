@@ -53,11 +53,11 @@
 
 **Files:** `provider.mbt`, `resolution.mbt`, `provider_test.mbt`.
 
-- [ ] Write tests against an intended object-safe `Provider` trait for metadata, initialize/shutdown, status, and typed resolution using a minimal provider.
-- [ ] Run tests before implementation and confirm expected missing-symbol diagnostics.
-- [ ] Define provider contract via compiler-verified `&Provider` trait objects; model metadata/status/errors and resolution value, reason, variant, flag metadata, error code/message.
-- [ ] Test initialization failure and unsupported value type handling.
-- [ ] Run checks/tests, review `moon info`, and commit contract separately.
+- [x] Write tests against an intended object-safe `Provider` trait for metadata, initialize/shutdown, status, and typed resolution using a minimal provider.
+- [x] Run tests before implementation and confirm expected missing-symbol diagnostics.
+- [x] Define provider contract via compiler-verified `&Provider` trait objects; model metadata/status/errors and resolution value, reason, variant, flag metadata, error code/message.
+- [x] Test initialization failure and unsupported value type handling.
+- [x] Run checks/tests, review `moon info`, and commit contract separately.
 
 ## Task 4: Isolated APIs, clients, context layers, typed evaluation
 
@@ -138,3 +138,7 @@
 - Compiler/tooling corrections: black-box tests use module-qualified paths; public enum construction uses pub(all); derived Eq/Debug methods are explicitly extended; empty maps use Map([]) to keep deny-warn clean.
 - moon ide doc still fails with “no metadata is available for any backend” inside this module. Verified JSON/Map/Debug signatures against installed stable core source; implementation uses the published API rather than copying core code.
 - Cross-target result: moon fmt --check passed; moon check --target all --deny-warn passed; moon test --target all --deny-warn passed 7/7 on wasm, wasm-gc, JS, and native; moon info --target all generated an intentional public-interface update.
+
+- Provider TDD: the black-box test first failed on the absent trait/types, then passed after defining the object-safe contract. The test also proves runtime dispatch through an actual &Provider value.
+- Resolution objects snapshot typed values and JSON metadata; getters return detached data. Trait status and reason enums remain extensible as public SDK concepts.
+- Cross-target verification: format/check passed, 8/8 tests passed on wasm, wasm-gc, JS, and native; moon info --target all produced the reviewed provider and resolution interface.

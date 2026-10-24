@@ -15,3 +15,9 @@
 - TDD evidence: missing APIs failed first; a JSON mutation test then failed because returned nested object changed the stored context; recursive copying fixed it.
 - Toolchain evidence: moon fmt --check passed; moon check --target all --deny-warn passed; moon test --target all --deny-warn passed 7/7 each on wasm, wasm-gc, js, and native; moon info --target all updated the reviewed public API.
 - Tooling notes: moon ide doc cannot load core metadata in this environment; inspected the installed stable core source for Json, Map, and Debug APIs. No upstream code was copied. Initial formatting found ambiguous empty map literals; replaced them with Map([]) and reran the gates successfully.
+
+## 2026-10-25 — Task 3: provider and resolution contract
+- Added object-safe synchronous Provider trait with metadata, initialization, shutdown, status, and typed resolve operations. The requested type and explicit evaluation context are passed into each provider resolution.
+- Added provider metadata/status and resolution-reason types plus immutable-by-interface ProviderResolution snapshots with variant, reason, and JSON flag metadata.
+- TDD evidence: provider contract tests first failed with missing trait/types, then passed through an actual trait-object dispatch.
+- Verification: moon fmt --check passed; moon check --target all --deny-warn passed; moon test --target all --deny-warn passed 8/8 on wasm, wasm-gc, js, and native; moon info --target all reviewed.
