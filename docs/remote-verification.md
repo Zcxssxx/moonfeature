@@ -30,4 +30,10 @@ The remote log confirms `moon update` completed, root tests passed 33/33 on wasm
 
 The first run reported that `actions/checkout@v4` was forced to Node 24 after Node 20 retirement. The workflow was changed to pin the signed `actions/checkout` v7.0.1 release commit. Follow-up run [40114983566](https://github.com/Zcxssxx/moonfeature/actions/runs/40114983566) completed successfully for head `fc8a3d6173e84c4e30221154b9e720dc448ddf93`; it passed `moon update`, the same 33/33 and 6/6 four-target tests, all-target builds, the demo, and generated-interface cleanliness. Its log had no Node 20 warning.
 
-GitHub added an annotation that `ubuntu-latest` was migrating to Ubuntu 26. The workflow now pins `ubuntu-24.04`, the OS actually used by the passing hosted runs, to keep the next validation stable during that migration. The pinned-runner revision is pending a new hosted run.
+GitHub added an annotation that `ubuntu-latest` was migrating to Ubuntu 26. The workflow now pins `ubuntu-24.04`. Run [40115073639](https://github.com/Zcxssxx/moonfeature/actions/runs/40115073639) completed successfully for head `54bc211b748af0fc3e50d9d11906335fb22f2c65` on the Ubuntu 24.04 image. It repeated the same successful `moon update`, 33/33 and 6/6 four-target tests, builds, demo, and generated-interface checks. The log confirms Moon 0.1.20261023 / moonc v0.10.17+d971670cd and no checkout Node 20 warning.
+
+## Verified snapshot after runner update
+
+At head `54bc211b748af0fc3e50d9d11906335fb22f2c65`, GitHub reports a public repository with default branch `main` and 46 files on the branch. The commit API lists 16 commits; each commit's linked GitHub author login is `Zcxssxx`. The contributors endpoint lists one contributor, `Zcxssxx`, with 14 contributions, while the commits endpoint lists 16 commits. These are distinct API counts, so the contribution total is not presented as a commit count.
+
+The local branch tracks `origin/main` at the same head, and the local worktree is clean. Subsequent documentation-only commits, if any, require their own remote head and CI checks.
