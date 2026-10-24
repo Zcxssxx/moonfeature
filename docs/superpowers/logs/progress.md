@@ -73,5 +73,5 @@
 ## 2026-10-25 — Task 9: final local acceptance
 - Re-ran `moon version --all`, `moon fmt --check`, root/local all-target warning-denying checks, tests, and builds, the native demo, root/local `moon info`, and Git diff/worktree checks. Every command exited 0 except the separately documented local registry update limitation.
 - Results: root 33/33 tests and local provider 6/6 tests on each of wasm, wasm-gc, JS, and native; all-target build/check succeeded; `moon info` caused no diff; final working tree was clean.
-- Audit: 11 meaningful commits, all authored/committed as `Zcxssxx`; local branch `main`, no remote; 25 `.mbt` files with 4,128 physical lines / 3,348 nonblank non-comment code lines. Full details and remaining items are in `docs/local-acceptance.md`.
+- Audit: more than ten meaningful commits, all authored/committed as `Zcxssxx`; local branch `main`, no remote; 25 `.mbt` files with 4,128 physical lines / 3,348 nonblank non-comment code lines. Full details and remaining items are in `docs/local-acceptance.md`.
 - Local acceptance gates are complete. Remote operations remain pending only the live GitHub CLI identity check; the supplied screenshot shows `Zcxssxx`, but it does not replace the required current-session check.
