@@ -15,12 +15,12 @@ version = "0.1.0"
 
 readme = "README.md"
 
-repository = ""
+repository = "https://github.com/Zcxssxx/moonfeature"
 
 license = "Apache-2.0"
 
-keywords = [ ]
+keywords = [ "feature-flags", "OpenFeature", "MoonBit", "SDK" ]
 
 preferred_target = "wasm"
 
-description = ""
+description = "An OpenFeature-inspired typed feature-flag evaluation SDK for MoonBit"
