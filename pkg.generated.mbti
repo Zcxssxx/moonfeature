@@ -3,6 +3,7 @@ package "Zcxssxx/moonfeature"
 
 import {
   "moonbitlang/core/debug",
+  "moonbitlang/core/ref",
 }
 
 // Values
@@ -10,6 +11,36 @@ import {
 // Errors
 
 // Types and methods
+pub struct Api {
+  state : @ref.Ref[ApiState]
+}
+pub fn Api::client(Self) -> Client
+pub fn Api::client_for_domain(Self, String) -> Client
+pub fn Api::context(Self) -> EvaluationContext
+pub fn Api::global() -> Self
+pub fn Api::new() -> Self
+pub fn Api::set_context(Self, EvaluationContext) -> Unit
+pub fn Api::set_provider(Self, &Provider) -> Unit
+
+type ApiState
+
+pub struct Client {
+  api : Api
+  domain : String?
+  context : @ref.Ref[EvaluationContext]
+}
+pub fn Client::context(Self) -> EvaluationContext
+pub fn Client::domain(Self) -> String?
+pub fn Client::get_boolean_details(Self, String, Bool, EvaluationContext) -> ResolutionDetails
+pub fn Client::get_boolean_value(Self, String, Bool, EvaluationContext) -> Bool
+pub fn Client::get_json_details(Self, String, Json, EvaluationContext) -> ResolutionDetails
+pub fn Client::get_json_value(Self, String, Json, EvaluationContext) -> Json
+pub fn Client::get_number_details(Self, String, Double, EvaluationContext) -> ResolutionDetails
+pub fn Client::get_number_value(Self, String, Double, EvaluationContext) -> Double
+pub fn Client::get_string_details(Self, String, String, EvaluationContext) -> ResolutionDetails
+pub fn Client::get_string_value(Self, String, String, EvaluationContext) -> String
+pub fn Client::set_context(Self, EvaluationContext) -> Unit
+
 pub(all) enum ErrorCode {
   FlagNotFound
   TypeMismatch
@@ -102,6 +133,26 @@ pub fn ProviderStatus::equal(Self, Self) -> Bool
 pub fn ProviderStatus::not_equal(Self, Self) -> Bool
 pub fn ProviderStatus::to_repr(Self) -> @debug.Repr
 
+pub struct ResolutionDetails {
+  flag_key : String
+  value : FlagValue
+  variant : String?
+  reason : ResolutionReason?
+  flag_metadata : Json
+  error_code : ErrorCode?
+  error_message : String?
+} derive(Eq, @debug.Debug)
+pub fn ResolutionDetails::equal(Self, Self) -> Bool
+pub fn ResolutionDetails::error_code(Self) -> ErrorCode?
+pub fn ResolutionDetails::error_message(Self) -> String?
+pub fn ResolutionDetails::flag_key(Self) -> String
+pub fn ResolutionDetails::flag_metadata(Self) -> Json
+pub fn ResolutionDetails::not_equal(Self, Self) -> Bool
+pub fn ResolutionDetails::reason(Self) -> ResolutionReason?
+pub fn ResolutionDetails::to_repr(Self) -> @debug.Repr
+pub fn ResolutionDetails::value(Self) -> FlagValue
+pub fn ResolutionDetails::variant(Self) -> String?
+
 pub(all) enum ResolutionReason {
   Static
   Default
@@ -110,6 +161,7 @@ pub(all) enum ResolutionReason {
   Cached
   Disabled
   Stale
+  Error
   Unknown
 } derive(Eq, @debug.Debug)
 pub fn ResolutionReason::equal(Self, Self) -> Bool

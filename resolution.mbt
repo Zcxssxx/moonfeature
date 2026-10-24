@@ -26,6 +26,7 @@ pub(all) enum ResolutionReason {
   Cached
   Disabled
   Stale
+  Error
   Unknown
 } derive(Eq, Debug)
 
@@ -146,4 +147,64 @@ pub fn ProviderResolution::reason(
 /// Return detached provider metadata.
 pub fn ProviderResolution::flag_metadata(self : ProviderResolution) -> Json {
   clone_json(self.flag_metadata)
+}
+
+///|
+/// SDK-level resolution details after defaults and type checks are applied.
+pub struct ResolutionDetails {
+  flag_key : String
+  value : FlagValue
+  variant : String?
+  reason : ResolutionReason?
+  flag_metadata : Json
+  error_code : ErrorCode?
+  error_message : String?
+} derive(Eq, Debug)
+
+///|
+pub extend ResolutionDetails with Eq::{equal, not_equal}
+
+///|
+pub extend ResolutionDetails with Debug::{to_repr}
+
+///|
+/// Return the evaluated flag key.
+pub fn ResolutionDetails::flag_key(self : ResolutionDetails) -> String {
+  self.flag_key
+}
+
+///|
+/// Return a detached typed value.
+pub fn ResolutionDetails::value(self : ResolutionDetails) -> FlagValue {
+  self.value.snapshot()
+}
+
+///|
+/// Return the provider variant, if any.
+pub fn ResolutionDetails::variant(self : ResolutionDetails) -> String? {
+  self.variant
+}
+
+///|
+/// Return the provider resolution reason, if any.
+pub fn ResolutionDetails::reason(self : ResolutionDetails) -> ResolutionReason? {
+  self.reason
+}
+
+///|
+/// Return detached flag metadata.
+pub fn ResolutionDetails::flag_metadata(self : ResolutionDetails) -> Json {
+  clone_json(self.flag_metadata)
+}
+
+///|
+/// Return the structured error category, if evaluation fell back.
+pub fn ResolutionDetails::error_code(self : ResolutionDetails) -> ErrorCode? {
+  self.error_code
+}
+
+///|
+/// Return the error message, if evaluation fell back.
+pub fn ResolutionDetails::error_message(self : ResolutionDetails) -> String? {
+  self.error_message
 }

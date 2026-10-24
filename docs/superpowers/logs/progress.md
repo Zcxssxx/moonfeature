@@ -21,3 +21,10 @@
 - Added provider metadata/status and resolution-reason types plus immutable-by-interface ProviderResolution snapshots with variant, reason, and JSON flag metadata.
 - TDD evidence: provider contract tests first failed with missing trait/types, then passed through an actual trait-object dispatch.
 - Verification: moon fmt --check passed; moon check --target all --deny-warn passed; moon test --target all --deny-warn passed 8/8 on wasm, wasm-gc, js, and native; moon info --target all reviewed.
+
+## 2026-10-25 — Task 4: isolated APIs and typed evaluation
+- Added Ref-backed isolated Api state, one shared process-wide Api::global handle, API and client contexts, clients with optional immutable domains, and default provider storage.
+- Added four typed value methods and four detailed methods. Resolution merges API < client < invocation context, validates provider value types, preserves provider resolution details, and returns caller defaults for missing providers, provider errors, and type mismatches.
+- TDD evidence: black-box tests first failed on missing Api symbols; after implementation, all four typed paths, details, context precedence, isolated/global API state, and failure fallbacks passed.
+- Verification on wasm, wasm-gc, js, and native: 12/12 tests per target; all-target warning-denying check and build passed; format and moon info passed.
+- Provider replacement still uses a direct setter without lifecycle guarantees; Task 5 will add and test initialization/swap/shutdown semantics.

@@ -63,11 +63,11 @@
 
 **Files:** `api.mbt`, `client.mbt`, `evaluation.mbt`, `api_test.mbt`, `evaluation_test.mbt`.
 
-- [ ] First write tests for independent `Api::new()` state, no-provider defaults, four typed getters/details, missing flags, type mismatch, and context merge order.
-- [ ] Run them and confirm failure before implementation.
-- [ ] Implement default API via one `Ref[ApiState]`, isolated API factory, immutable client/domain identity, provider selection, and typed conversion/default behavior.
-- [ ] Prove failures preserve caller defaults and diagnostics and isolated APIs do not share provider/context state.
-- [ ] Run focused/full tests, inspect `moon info`, commit this layer.
+- [x] First write tests for independent `Api::new()` state, no-provider defaults, four typed getters/details, missing flags, type mismatch, and context merge order.
+- [x] Run them and confirm failure before implementation.
+- [x] Implement default API via one `Ref[ApiState]`, isolated API factory, immutable client/domain identity, provider selection, and typed conversion/default behavior.
+- [x] Prove failures preserve caller defaults and diagnostics and isolated APIs do not share provider/context state.
+- [x] Run focused/full tests, inspect `moon info`, commit this layer.
 
 ## Task 5: Binding, lifecycle, status, events
 
@@ -142,3 +142,8 @@
 - Provider TDD: the black-box test first failed on the absent trait/types, then passed after defining the object-safe contract. The test also proves runtime dispatch through an actual &Provider value.
 - Resolution objects snapshot typed values and JSON metadata; getters return detached data. Trait status and reason enums remain extensible as public SDK concepts.
 - Cross-target verification: format/check passed, 8/8 tests passed on wasm, wasm-gc, JS, and native; moon info --target all produced the reviewed provider and resolution interface.
+
+- API TDD: black-box tests first failed with a missing Api type, then passed after wiring Ref-backed state, clients, provider resolution, and typed wrappers.
+- Verified global Api handles share one process state while Api::new instances remain isolated. Context test confirms invocation values override client and API values, and client values override API values.
+- Failure behavior tested: no-provider defaults, missing-flag errors, provider type mismatch, details/reason/error code, and all four provider-returned value types.
+- Cross-target gates: moon fmt --check, moon check --target all --deny-warn, moon test --target all --deny-warn (12/12 each), moon build --target all --deny-warn, and moon info --target all passed. The generated API now includes typed Client methods and ResolutionDetails.
