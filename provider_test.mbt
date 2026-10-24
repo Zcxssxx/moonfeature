@@ -68,3 +68,13 @@ test "provider trait objects dispatch metadata lifecycle and resolution" {
   }
   assert_eq(provider.shutdown(), Ok(()))
 }
+
+///|
+impl @moonfeature.Provider for FixedProvider with fn instance_id(_self) {
+  "fixed-test-instance"
+}
+
+///|
+impl @moonfeature.Provider for FixedProvider with fn domain_scoped(_self) {
+  false
+}

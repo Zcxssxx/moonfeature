@@ -19,8 +19,12 @@ pub fn Api::client_for_domain(Self, String) -> Client
 pub fn Api::context(Self) -> EvaluationContext
 pub fn Api::global() -> Self
 pub fn Api::new() -> Self
+pub fn Api::provider_metadata(Self, String?) -> ProviderMetadata?
+pub fn Api::remove_provider_for_domain(Self, String) -> Result[Unit, EvaluationError]
 pub fn Api::set_context(Self, EvaluationContext) -> Unit
-pub fn Api::set_provider(Self, &Provider) -> Unit
+pub fn Api::set_provider(Self, &Provider) -> Result[Unit, EvaluationError]
+pub fn Api::set_provider_for_domain(Self, String, &Provider) -> Result[Unit, EvaluationError]
+pub fn Api::shutdown(Self) -> Result[Unit, EvaluationError]
 
 type ApiState
 
@@ -39,7 +43,9 @@ pub fn Client::get_number_details(Self, String, Double, EvaluationContext) -> Re
 pub fn Client::get_number_value(Self, String, Double, EvaluationContext) -> Double
 pub fn Client::get_string_details(Self, String, String, EvaluationContext) -> ResolutionDetails
 pub fn Client::get_string_value(Self, String, String, EvaluationContext) -> String
+pub fn Client::provider_metadata(Self) -> ProviderMetadata?
 pub fn Client::set_context(Self, EvaluationContext) -> Unit
+pub fn Client::status(Self) -> ProviderStatus
 
 pub(all) enum ErrorCode {
   FlagNotFound
@@ -183,6 +189,8 @@ pub fn ValueType::to_repr(Self) -> @debug.Repr
 // Traits
 pub(open) trait Provider {
   fn metadata(Self) -> ProviderMetadata
+  fn instance_id(Self) -> String
+  fn domain_scoped(Self) -> Bool
   fn initialize(Self, EvaluationContext, String?) -> Result[Unit, EvaluationError]
   fn shutdown(Self) -> Result[Unit, EvaluationError]
   fn status(Self) -> ProviderStatus

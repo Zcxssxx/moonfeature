@@ -72,7 +72,7 @@ fn Client::resolve(
   invocation_context : EvaluationContext,
 ) -> ResolutionDetails {
   let context = self.merged_context(invocation_context)
-  match self.api.default_provider() {
+  match self.api.provider_for_domain(self.domain) {
     None => fallback_details(flag_key, default_value, None)
     Some(provider) =>
       match provider.resolve(flag_key, default_value.value_type(), context) {
@@ -205,4 +205,19 @@ pub fn Client::get_json_details(
   context : EvaluationContext,
 ) -> ResolutionDetails {
   self.resolve(flag_key, FlagValue::Json(default_value), context)
+}
+
+///|
+/// Return the active provider status for this client's domain.
+pub fn Client::status(self : Client) -> ProviderStatus {
+  match self.api.provider_for_domain(self.domain) {
+    Some(provider) => provider.status()
+    None => ProviderStatus::NotReady
+  }
+}
+
+///|
+/// Return metadata for the provider selected by this client.
+pub fn Client::provider_metadata(self : Client) -> ProviderMetadata? {
+  self.api.provider_metadata(self.domain)
 }

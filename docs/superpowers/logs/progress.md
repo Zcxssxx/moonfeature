@@ -28,3 +28,10 @@
 - TDD evidence: black-box tests first failed on missing Api symbols; after implementation, all four typed paths, details, context precedence, isolated/global API state, and failure fallbacks passed.
 - Verification on wasm, wasm-gc, js, and native: 12/12 tests per target; all-target warning-denying check and build passed; format and moon info passed.
 - Provider replacement still uses a direct setter without lifecycle guarantees; Task 5 will add and test initialization/swap/shutdown semantics.
+
+## 2026-10-25 — Task 5: provider binding, lifecycle, and domains
+- Provider contract now requires a stable unique instance_id and declares whether an instance is domain-scoped. The ID lets the API share one live provider instance across bindings and deduplicate lifecycle operations.
+- Replaced the temporary direct setter with Result-returning default/domain registration. New providers initialize before activation; failed initialization preserves the previous binding. Providers shut down after their final binding is removed; API shutdown calls each remaining instance once and resets state even when shutdown returns an error.
+- Added domain provider selection with default fallback, empty/duplicate scope validation, status lookup, and provider metadata lookup for API/client.
+- TDD evidence: lifecycle/domain tests were written against missing APIs and produced expected missing-method/result diagnostics; all behavior now passes.
+- Verification: moon fmt --check, moon check --target all --deny-warn, moon test --target all --deny-warn (17/17 each on wasm, wasm-gc, js, native), moon build --target all --deny-warn, and moon info --target all passed.

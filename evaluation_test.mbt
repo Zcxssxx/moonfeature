@@ -90,7 +90,7 @@ test "API and client contexts merge before provider resolution" {
   let api = @moonfeature.Api::new()
   let provider : &@moonfeature.Provider = ContextProvider::{ }
     as &@moonfeature.Provider
-  api.set_provider(provider)
+  assert_eq(api.set_provider(provider), Ok(()))
   api.set_context(
     @moonfeature.EvaluationContext::empty().with_attribute(
       "tier",
@@ -124,7 +124,7 @@ test "typed evaluations preserve provider details and safely fall back" {
   let api = @moonfeature.Api::new()
   let provider : &@moonfeature.Provider = ContextProvider::{ }
     as &@moonfeature.Provider
-  api.set_provider(provider)
+  assert_eq(api.set_provider(provider), Ok(()))
   let client = api.client()
   let context = @moonfeature.EvaluationContext::empty()
   assert_eq(client.get_boolean_value("enabled", false, context), true)
@@ -157,4 +157,14 @@ test "API instances keep their global contexts isolated" {
   )
   assert_eq(first.context().targeting_key(), Some("first-user"))
   assert_eq(second.context().targeting_key(), None)
+}
+
+///|
+impl @moonfeature.Provider for ContextProvider with fn instance_id(_self) {
+  "context-test-instance"
+}
+
+///|
+impl @moonfeature.Provider for ContextProvider with fn domain_scoped(_self) {
+  false
 }

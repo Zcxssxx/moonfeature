@@ -1,8 +1,27 @@
 ///|
 /// Shared mutable state owned by one API instance.
+priv struct ProviderEntry {
+  provider : &Provider
+}
+
+///|
 struct ApiState {
   context : EvaluationContext
-  default_provider : &Provider?
+  default_provider_id : String?
+  domain_providers : Map[String, String]
+  providers : Map[String, ProviderEntry]
+  scoped_domains : Map[String, String]
+}
+
+///|
+fn ApiState::empty() -> ApiState {
+  {
+    context: EvaluationContext::empty(),
+    default_provider_id: None,
+    domain_providers: Map([]),
+    providers: Map([]),
+    scoped_domains: Map([]),
+  }
 }
 
 ///|
@@ -14,12 +33,7 @@ pub struct Api {
 ///|
 /// Create an isolated API instance with no provider and an empty context.
 pub fn Api::new() -> Api {
-  {
-    state: @ref.Ref({
-      context: EvaluationContext::empty(),
-      default_provider: None,
-    }),
-  }
+  { state: @ref.Ref(ApiState::empty()), }
 }
 
 ///|
@@ -36,11 +50,40 @@ pub fn Api::context(self : Api) -> EvaluationContext {
 }
 
 ///|
-/// Register the default provider for this API instance.
-/// Lifecycle guarantees are applied by the provider-binding layer.
-pub fn Api::set_provider(self : Api, provider : &Provider) -> Unit {
-  let current = self.state.val
-  self.state.val = { ..current, default_provider: Some(provider), }
+/// Bind the default provider and initialize it before replacing the current one.
+pub fn Api::set_provider(
+  self : Api,
+  provider : &Provider,
+) -> Result[Unit, EvaluationError] {
+  self.bind_provider(None, provider)
+}
+
+///|
+/// Bind a provider to one domain and initialize it before replacing the current one.
+pub fn Api::set_provider_for_domain(
+  self : Api,
+  domain : String,
+  provider : &Provider,
+) -> Result[Unit, EvaluationError] {
+  self.bind_provider(Some(domain), provider)
+}
+
+///|
+/// Remove a domain binding and shut down its provider if no bindings remain.
+pub fn Api::remove_provider_for_domain(
+  self : Api,
+  domain : String,
+) -> Result[Unit, EvaluationError] {
+  let state = self.state.val
+  match state.domain_providers.get(domain) {
+    None => Ok(())
+    Some(provider_id) => {
+      let domain_providers = state.domain_providers.copy()
+      domain_providers.update(domain, fn(_) { None })
+      self.state.val = { ..state, domain_providers, }
+      self.shutdown_provider_if_unused(provider_id)
+    }
+  }
 }
 
 ///|
@@ -60,6 +103,18 @@ pub fn Api::client_for_domain(self : Api, domain : String) -> Client {
 }
 
 ///|
+/// Look up provider metadata for a domain, falling back to the default provider.
+pub fn Api::provider_metadata(
+  self : Api,
+  domain : String?,
+) -> ProviderMetadata? {
+  match self.provider_for_domain(domain) {
+    Some(provider) => Some(provider.metadata())
+    None => None
+  }
+}
+
+///|
 /// Return the shared process-wide API handle.
 pub fn Api::global() -> Api {
   process_api
@@ -69,6 +124,36 @@ pub fn Api::global() -> Api {
 let process_api : Api = Api::new()
 
 ///|
-fn Api::default_provider(self : Api) -> &Provider? {
-  self.state.val.default_provider
+fn Api::provider_for_domain(self : Api, domain : String?) -> &Provider? {
+  let state = self.state.val
+  let provider_id = match domain {
+    Some(domain) =>
+      match state.domain_providers.get(domain) {
+        Some(id) => Some(id)
+        None => state.default_provider_id
+      }
+    None => state.default_provider_id
+  }
+  match provider_id {
+    Some(id) =>
+      match state.providers.get(id) {
+        Some(entry) => Some(entry.provider)
+        None => None
+      }
+    None => None
+  }
+}
+
+///|
+fn Api::is_provider_bound(self : Api, provider_id : String) -> Bool {
+  let state = self.state.val
+  if state.default_provider_id == Some(provider_id) {
+    return true
+  }
+  for (_, current_id) in state.domain_providers.to_array() {
+    if current_id == provider_id {
+      return true
+    }
+  }
+  false
 }

@@ -73,11 +73,11 @@
 
 **Files:** `lifecycle.mbt`, `events.mbt`, `api.mbt`, `lifecycle_test.mbt`.
 
-- [ ] Write failing tests for default/domain binding, unbound fallback, single-domain restrictions, initialize-before-swap, retaining prior provider on init failure, old-provider shutdown, status, event handler add/remove/delivery, and shutdown/reset despite errors.
-- [ ] Run tests and confirm missing behavior failure.
-- [ ] Track each provider instance to initialize/shutdown once; route events to API/matching-client handlers; continue after one handler error.
-- [ ] Assert order, replacement atomicity, and reset semantics.
-- [ ] Run full checks/tests and commit separately.
+- [x] Write failing tests for default/domain binding, unbound fallback, single-domain restrictions, initialize-before-swap, retaining prior provider on init failure, old-provider shutdown, status, event handler add/remove/delivery, and shutdown/reset despite errors.
+- [x] Run tests and confirm missing behavior failure.
+- [x] Track each provider instance to initialize/shutdown once; route events to API/matching-client handlers; continue after one handler error.
+- [x] Assert order, replacement atomicity, and reset semantics.
+- [x] Run full checks/tests and commit separately.
 
 ## Task 6: Scoped hooks and failure behavior
 
@@ -147,3 +147,7 @@
 - Verified global Api handles share one process state while Api::new instances remain isolated. Context test confirms invocation values override client and API values, and client values override API values.
 - Failure behavior tested: no-provider defaults, missing-flag errors, provider type mismatch, details/reason/error code, and all four provider-returned value types.
 - Cross-target gates: moon fmt --check, moon check --target all --deny-warn, moon test --target all --deny-warn (12/12 each), moon build --target all --deny-warn, and moon info --target all passed. The generated API now includes typed Client methods and ResolutionDetails.
+
+- Lifecycle/domain tests first failed on missing domain binding, Result-returning lifecycle methods, status, and metadata APIs; the implementation then passed 17 tests on each stable supported backend.
+- Provider instance identity is an explicit SDK contract because trait objects have no structural equality. One identity maps to one live provider instance; the same identity can be bound more than once and is initialized/shut down once.
+- Validation: moon fmt --check, moon check --target all --deny-warn, moon test --target all --deny-warn (17/17 on wasm, wasm-gc, JS, and native), moon build --target all --deny-warn, and moon info --target all passed.
