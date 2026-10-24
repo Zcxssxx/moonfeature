@@ -24,4 +24,4 @@ Implementation and synthetic test data are authored for this project. The SDK ru
 
 MoonFeature is OpenFeature-inspired and does not claim full specification conformance. The current release is synchronous and in-memory; it does not include remote providers, persistence, a control plane, or an operator UI. The conformance profile identifies known gaps. Future work can add separately testable standard value/context behavior, provider adapters, persistence, and stronger conformance without changing the project into a hosted service.
 
-**License:** Apache-2.0. **Public repository:** create and attach after local acceptance; submit the resulting URL in the event form. **Formal charter details still requiring confirmation:** see [`hackathon-requirements.md`](hackathon-requirements.md).
+**License:** Apache-2.0. **Public repository:** [github.com/Zcxssxx/moonfeature](https://github.com/Zcxssxx/moonfeature). Submit this URL through the event form. **Formal charter details still requiring confirmation:** see [`hackathon-requirements.md`](hackathon-requirements.md).

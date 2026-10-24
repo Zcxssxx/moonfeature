@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-25 (Asia/Shanghai)
 
-**Scope:** Local repository only. GitHub identity has not yet been checked from the active CLI session, no remote is configured, and no GitHub repository or CI result is claimed here.
+**Scope:** This is the local-only checkpoint recorded immediately before remote creation. Remote publication and hosted CI are tracked separately in `docs/remote-verification.md`.
 
 ## Toolchain
 
@@ -51,9 +51,9 @@ The native demo output showed `user-0` receiving `checkout-canary` at 70%, `alic
 - **Provenance:** Implementation and synthetic fixtures were authored for this project. Runtime imports are MoonBit core `ref` and UTF-8 packages only. OpenFeature pages are normative behavior references, not copied implementation or test corpora. Exact upstream links and workflow references are listed in `docs/sources.md`.
 - **Placeholders:** `rg -n 'TODO|FIXME|TBD' -g '*.mbt' .` returned no matches. Formal-charter unknowns remain explicitly marked `待确认` in the submission rules record.
 
-## Remaining checks
+## Items outside the local checkpoint
 
-- Recheck the active GitHub CLI identity as exactly `Zcxssxx`; then create/push the public repository and verify its default branch, remote files, commit history, contributors, and CI run.
+- The later active-identity check, public repository creation/push, remote file/history/contributor audit, and hosted CI are recorded separately in `docs/remote-verification.md`.
 - Retrieve the supplied formal charter/supplement through an organizer or accessible source to confirm exact cutoff time, hosting platform, Mooncakes requirement, CI/toolchain mandates, review criteria, and allowed edits. The official site confirms 2026-10-31 but gives no time of day.
 - No Mooncakes publication has been made. The official page text retrieved in this session does not say whether publication is required; confirm against the formal charter before deciding.
 - The participant must submit the event form and join the official event group using the GitHub ID as nickname; this is not done by the local code work.

@@ -4,6 +4,8 @@ MoonFeature is a MoonBit server SDK for typed feature-flag evaluation. It provid
 
 **Status:** early development for the October 2026 MoonBit hackathon. The public API may still evolve. MoonFeature is OpenFeature-inspired and does not claim full OpenFeature conformance; see the [conformance profile](docs/conformance.md).
 
+**Repository:** [github.com/Zcxssxx/moonfeature](https://github.com/Zcxssxx/moonfeature)
+
 ## Run the demo
 
 With the stable MoonBit toolchain installed:
@@ -42,6 +44,7 @@ The SDK and local provider run on wasm, wasm-gc, JavaScript, and native targets 
 - [Hackathon requirements check](docs/hackathon-requirements.md)
 - [One-page project description](docs/hackathon-proposal.md)
 - [Local acceptance record](docs/local-acceptance.md)
+- [Remote repository and CI verification](docs/remote-verification.md)
 - [Approved design](docs/superpowers/specs/2026-10-24-openfeature-sdk-design.md)
 
 ## Local checks

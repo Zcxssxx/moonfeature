@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Module: `Zcxssxx/moonfeature`; local repo `moonfeature/`; unborn `main`; no remote.
+- Module/repository: `Zcxssxx/moonfeature`; local branch `main`; public remote is created after local acceptance and identity verification.
 - Non-development stable updater completed “up to date”; recheck `moon version --all` before final verification.
 - Typed values: Boolean, Number, String, JSON. Errors/mismatches resolve to caller defaults with detail.
 - Context precedence: API < client < invocation < before-hook updates.
