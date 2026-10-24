@@ -75,7 +75,7 @@
 
 - [x] Write failing tests for default/domain binding, unbound fallback, single-domain restrictions, initialize-before-swap, retaining prior provider on init failure, old-provider shutdown, status, event handler add/remove/delivery, and shutdown/reset despite errors.
 - [x] Run tests and confirm missing behavior failure.
-- [x] Track each provider instance to initialize/shutdown once; route events to API/matching-client handlers; continue after one handler error.
+- [x] Track each provider instance to initialize/shutdown once; subscribe once per provider, buffer initialization-time events until activation, unsubscribe on retirement/shutdown, route events to API/matching-client handlers, and continue after one handler error.
 - [x] Assert order, replacement atomicity, and reset semantics.
 - [x] Run full checks/tests and commit separately.
 

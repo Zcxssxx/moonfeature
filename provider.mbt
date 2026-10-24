@@ -16,4 +16,16 @@ pub(open) trait Provider {
     ProviderResolution,
     EvaluationError,
   ]
+  fn subscribe_events(Self, ProviderEventSink) -> Int32 = _
+  fn unsubscribe_events(Self, Int32) -> Unit = _
+}
+
+///|
+impl Provider with fn subscribe_events(_self, _sink) {
+  0
+}
+
+///|
+impl Provider with fn unsubscribe_events(_self, _id) {
+
 }

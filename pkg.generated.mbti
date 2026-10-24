@@ -14,12 +14,15 @@ import {
 pub struct Api {
   state : @ref.Ref[ApiState]
 }
+pub fn Api::add_event_handler(Self, (ProviderEvent) -> Result[Unit, EvaluationError]) -> Int32
 pub fn Api::client(Self) -> Client
 pub fn Api::client_for_domain(Self, String) -> Client
 pub fn Api::context(Self) -> EvaluationContext
+pub fn Api::drain_event_handler_errors(Self) -> Array[EvaluationError]
 pub fn Api::global() -> Self
 pub fn Api::new() -> Self
 pub fn Api::provider_metadata(Self, String?) -> ProviderMetadata?
+pub fn Api::remove_event_handler(Self, Int32) -> Bool
 pub fn Api::remove_provider_for_domain(Self, String) -> Result[Unit, EvaluationError]
 pub fn Api::set_context(Self, EvaluationContext) -> Unit
 pub fn Api::set_provider(Self, &Provider) -> Result[Unit, EvaluationError]
@@ -33,6 +36,7 @@ pub struct Client {
   domain : String?
   context : @ref.Ref[EvaluationContext]
 }
+pub fn Client::add_event_handler(Self, (ProviderEvent) -> Result[Unit, EvaluationError]) -> Int32
 pub fn Client::context(Self) -> EvaluationContext
 pub fn Client::domain(Self) -> String?
 pub fn Client::get_boolean_details(Self, String, Bool, EvaluationContext) -> ResolutionDetails
@@ -44,6 +48,7 @@ pub fn Client::get_number_value(Self, String, Double, EvaluationContext) -> Doub
 pub fn Client::get_string_details(Self, String, String, EvaluationContext) -> ResolutionDetails
 pub fn Client::get_string_value(Self, String, String, EvaluationContext) -> String
 pub fn Client::provider_metadata(Self) -> ProviderMetadata?
+pub fn Client::remove_event_handler(Self, Int32) -> Bool
 pub fn Client::set_context(Self, EvaluationContext) -> Unit
 pub fn Client::status(Self) -> ProviderStatus
 
@@ -96,6 +101,30 @@ pub fn FlagValue::equal(Self, Self) -> Bool
 pub fn FlagValue::not_equal(Self, Self) -> Bool
 pub fn FlagValue::to_repr(Self) -> @debug.Repr
 pub fn FlagValue::value_type(Self) -> ValueType
+
+pub struct ProviderEvent {
+  kind : ProviderEventKind
+  message : String?
+  changed_flags : Array[String]
+}
+pub fn ProviderEvent::changed_flags(Self) -> Array[String]
+pub fn ProviderEvent::kind(Self) -> ProviderEventKind
+pub fn ProviderEvent::message(Self) -> String?
+pub fn ProviderEvent::new(ProviderEventKind) -> Self
+pub fn ProviderEvent::with_changed_flags(Self, Array[String]) -> Self
+pub fn ProviderEvent::with_message(Self, String) -> Self
+
+pub(all) enum ProviderEventKind {
+  ProviderReady
+  ProviderError
+  ConfigurationChanged
+  ProviderStale
+  ProviderReconciling
+  ContextChanged
+} derive(Eq, @debug.Debug)
+pub fn ProviderEventKind::equal(Self, Self) -> Bool
+pub fn ProviderEventKind::not_equal(Self, Self) -> Bool
+pub fn ProviderEventKind::to_repr(Self) -> @debug.Repr
 
 pub struct ProviderMetadata {
   name : String
@@ -185,6 +214,9 @@ pub fn ValueType::not_equal(Self, Self) -> Bool
 pub fn ValueType::to_repr(Self) -> @debug.Repr
 
 // Type aliases
+pub type ProviderEventHandler = (ProviderEvent) -> Result[Unit, EvaluationError]
+
+pub type ProviderEventSink = (ProviderEvent) -> Unit
 
 // Traits
 pub(open) trait Provider {
@@ -195,4 +227,6 @@ pub(open) trait Provider {
   fn shutdown(Self) -> Result[Unit, EvaluationError]
   fn status(Self) -> ProviderStatus
   fn resolve(Self, String, ValueType, EvaluationContext) -> Result[ProviderResolution, EvaluationError]
+  fn subscribe_events(Self, (ProviderEvent) -> Unit) -> Int32 = _
+  fn unsubscribe_events(Self, Int32) -> Unit = _
 }

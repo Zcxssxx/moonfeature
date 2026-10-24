@@ -35,3 +35,10 @@
 - Added domain provider selection with default fallback, empty/duplicate scope validation, status lookup, and provider metadata lookup for API/client.
 - TDD evidence: lifecycle/domain tests were written against missing APIs and produced expected missing-method/result diagnostics; all behavior now passes.
 - Verification: moon fmt --check, moon check --target all --deny-warn, moon test --target all --deny-warn (17/17 each on wasm, wasm-gc, js, native), moon build --target all --deny-warn, and moon info --target all passed.
+
+## 2026-10-25 — Task 5 extension: provider events
+- Added provider event kinds and immutable-by-interface event payloads, optional subscription hooks on the Provider trait, API-wide and client/domain event handlers, removal, and a drainable handler-error queue.
+- Subscriptions are installed before initialization so providers can announce readiness; events emitted during initialization are buffered and delivered only after activation. Failed initialization discards buffered events and unsubscribes. Retiring and shutdown paths unsubscribe before provider shutdown.
+- Dispatch snapshots the matching API/client handlers, routes clients by the provider currently selected for their domain (including default fallback), gives each handler detached event data, records callback errors, and continues to remaining handlers.
+- TDD evidence: initial tests failed on missing APIs. Added checks for routing across default/domain providers, removal, handler-error containment, initialization-time readiness, and unsubscribe/no stale routing after replacement.
+- Verification: `moon fmt --check`, `moon check --target all --deny-warn`, `moon test --target all --deny-warn` (21/21 each on wasm, wasm-gc, js, native), `moon build --target all --deny-warn`, and `moon info --target all` passed. Reviewed generated event and handler interfaces.

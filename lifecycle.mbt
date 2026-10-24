@@ -49,10 +49,22 @@ fn Api::bind_provider(
     Some(_) => true
     None => false
   }
+  let active = @ref.Ref(false)
+  let pending_events : @ref.Ref[Array[ProviderEvent]] = @ref.Ref([])
+  let mut event_subscription_id : Int32 = 0
   if !already_registered {
+    let sink : ProviderEventSink = fn(event) {
+      if active.val {
+        self.dispatch_provider_event(provider_id, event)
+      } else {
+        pending_events.val.push(event.snapshot())
+      }
+    }
+    event_subscription_id = provider.subscribe_events(sink)
     match provider.initialize(self.state.val.context, domain) {
       Ok(_) => ()
       Err(error) => {
+        provider.unsubscribe_events(event_subscription_id)
         let _ = provider.shutdown()
         return Err(error)
       }
@@ -69,7 +81,12 @@ fn Api::bind_provider(
   }
 
   let providers = current.providers.copy()
-  providers.set(provider_id, ProviderEntry::{ provider, })
+  if !already_registered {
+    providers.set(provider_id, ProviderEntry::{
+      provider,
+      event_subscription_id,
+    })
+  }
   let mut default_provider_id = current.default_provider_id
   let domain_providers = current.domain_providers.copy()
   let scoped_domains = current.scoped_domains.copy()
@@ -88,6 +105,12 @@ fn Api::bind_provider(
     domain_providers,
     providers,
     scoped_domains,
+  }
+  if !already_registered {
+    active.val = true
+    for event in pending_events.val {
+      self.dispatch_provider_event(provider_id, event)
+    }
   }
   match previous_id {
     Some(old_id) => self.shutdown_provider_if_unused(old_id)
@@ -108,6 +131,7 @@ fn Api::shutdown_provider_if_unused(
   match current.providers.get(provider_id) {
     None => Ok(())
     Some(entry) => {
+      entry.provider.unsubscribe_events(entry.event_subscription_id)
       let result = entry.provider.shutdown()
       let providers = current.providers.copy()
       providers.update(provider_id, fn(_) { None })
@@ -126,6 +150,7 @@ pub fn Api::shutdown(self : Api) -> Result[Unit, EvaluationError] {
   let entries = current.providers.to_array()
   let mut first_error : EvaluationError? = None
   for (_, entry) in entries {
+    entry.provider.unsubscribe_events(entry.event_subscription_id)
     match entry.provider.shutdown() {
       Ok(_) => ()
       Err(error) => if first_error is None { first_error = Some(error) }

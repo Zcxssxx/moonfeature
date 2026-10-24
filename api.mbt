@@ -2,6 +2,7 @@
 /// Shared mutable state owned by one API instance.
 priv struct ProviderEntry {
   provider : &Provider
+  event_subscription_id : Int32
 }
 
 ///|
@@ -11,6 +12,10 @@ struct ApiState {
   domain_providers : Map[String, String]
   providers : Map[String, ProviderEntry]
   scoped_domains : Map[String, String]
+  api_event_handlers : Array[ApiEventHandlerEntry]
+  client_event_handlers : Array[ClientEventHandlerEntry]
+  event_handler_errors : Array[EvaluationError]
+  next_event_handler_id : Int32
 }
 
 ///|
@@ -21,6 +26,10 @@ fn ApiState::empty() -> ApiState {
     domain_providers: Map([]),
     providers: Map([]),
     scoped_domains: Map([]),
+    api_event_handlers: [],
+    client_event_handlers: [],
+    event_handler_errors: [],
+    next_event_handler_id: 1,
   }
 }
 
@@ -126,14 +135,7 @@ let process_api : Api = Api::new()
 ///|
 fn Api::provider_for_domain(self : Api, domain : String?) -> &Provider? {
   let state = self.state.val
-  let provider_id = match domain {
-    Some(domain) =>
-      match state.domain_providers.get(domain) {
-        Some(id) => Some(id)
-        None => state.default_provider_id
-      }
-    None => state.default_provider_id
-  }
+  let provider_id = self.provider_id_for_domain(domain)
   match provider_id {
     Some(id) =>
       match state.providers.get(id) {
@@ -141,6 +143,19 @@ fn Api::provider_for_domain(self : Api, domain : String?) -> &Provider? {
         None => None
       }
     None => None
+  }
+}
+
+///|
+fn Api::provider_id_for_domain(self : Api, domain : String?) -> String? {
+  let state = self.state.val
+  match domain {
+    Some(domain) =>
+      match state.domain_providers.get(domain) {
+        Some(id) => Some(id)
+        None => state.default_provider_id
+      }
+    None => state.default_provider_id
   }
 }
 
