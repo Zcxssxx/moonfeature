@@ -15,14 +15,17 @@ pub struct Api {
   state : @ref.Ref[ApiState]
 }
 pub fn Api::add_event_handler(Self, (ProviderEvent) -> Result[Unit, EvaluationError]) -> Int32
+pub fn Api::add_hook(Self, Hook) -> Int32
 pub fn Api::client(Self) -> Client
 pub fn Api::client_for_domain(Self, String) -> Client
 pub fn Api::context(Self) -> EvaluationContext
 pub fn Api::drain_event_handler_errors(Self) -> Array[EvaluationError]
+pub fn Api::drain_hook_errors(Self) -> Array[EvaluationError]
 pub fn Api::global() -> Self
 pub fn Api::new() -> Self
 pub fn Api::provider_metadata(Self, String?) -> ProviderMetadata?
 pub fn Api::remove_event_handler(Self, Int32) -> Bool
+pub fn Api::remove_hook(Self, Int32) -> Bool
 pub fn Api::remove_provider_for_domain(Self, String) -> Result[Unit, EvaluationError]
 pub fn Api::set_context(Self, EvaluationContext) -> Unit
 pub fn Api::set_provider(Self, &Provider) -> Result[Unit, EvaluationError]
@@ -35,20 +38,31 @@ pub struct Client {
   api : Api
   domain : String?
   context : @ref.Ref[EvaluationContext]
+  hooks : @ref.Ref[Array[(Int32, Hook)]]
 }
 pub fn Client::add_event_handler(Self, (ProviderEvent) -> Result[Unit, EvaluationError]) -> Int32
+pub fn Client::add_hook(Self, Hook) -> Int32
 pub fn Client::context(Self) -> EvaluationContext
 pub fn Client::domain(Self) -> String?
 pub fn Client::get_boolean_details(Self, String, Bool, EvaluationContext) -> ResolutionDetails
+pub fn Client::get_boolean_details_with_options(Self, String, Bool, EvaluationOptions) -> ResolutionDetails
 pub fn Client::get_boolean_value(Self, String, Bool, EvaluationContext) -> Bool
+pub fn Client::get_boolean_value_with_options(Self, String, Bool, EvaluationOptions) -> Bool
 pub fn Client::get_json_details(Self, String, Json, EvaluationContext) -> ResolutionDetails
+pub fn Client::get_json_details_with_options(Self, String, Json, EvaluationOptions) -> ResolutionDetails
 pub fn Client::get_json_value(Self, String, Json, EvaluationContext) -> Json
+pub fn Client::get_json_value_with_options(Self, String, Json, EvaluationOptions) -> Json
 pub fn Client::get_number_details(Self, String, Double, EvaluationContext) -> ResolutionDetails
+pub fn Client::get_number_details_with_options(Self, String, Double, EvaluationOptions) -> ResolutionDetails
 pub fn Client::get_number_value(Self, String, Double, EvaluationContext) -> Double
+pub fn Client::get_number_value_with_options(Self, String, Double, EvaluationOptions) -> Double
 pub fn Client::get_string_details(Self, String, String, EvaluationContext) -> ResolutionDetails
+pub fn Client::get_string_details_with_options(Self, String, String, EvaluationOptions) -> ResolutionDetails
 pub fn Client::get_string_value(Self, String, String, EvaluationContext) -> String
+pub fn Client::get_string_value_with_options(Self, String, String, EvaluationOptions) -> String
 pub fn Client::provider_metadata(Self) -> ProviderMetadata?
 pub fn Client::remove_event_handler(Self, Int32) -> Bool
+pub fn Client::remove_hook(Self, Int32) -> Bool
 pub fn Client::set_context(Self, EvaluationContext) -> Unit
 pub fn Client::status(Self) -> ProviderStatus
 
@@ -87,6 +101,15 @@ pub fn EvaluationError::new(ErrorCode, String) -> Self
 pub fn EvaluationError::not_equal(Self, Self) -> Bool
 pub fn EvaluationError::to_repr(Self) -> @debug.Repr
 
+pub struct EvaluationOptions {
+  context : EvaluationContext
+  hooks : Array[Hook]
+  hints : Json
+}
+pub fn EvaluationOptions::new(EvaluationContext) -> Self
+pub fn EvaluationOptions::with_hints(Self, Json) -> Self
+pub fn EvaluationOptions::with_hook(Self, Hook) -> Self
+
 pub(all) enum FlagValue {
   Boolean(Bool)
   Number(Double)
@@ -101,6 +124,37 @@ pub fn FlagValue::equal(Self, Self) -> Bool
 pub fn FlagValue::not_equal(Self, Self) -> Bool
 pub fn FlagValue::to_repr(Self) -> @debug.Repr
 pub fn FlagValue::value_type(Self) -> ValueType
+
+pub struct Hook {
+  before : ((HookContext, Json, Json) -> Result[HookBeforeResult, EvaluationError])?
+  after : ((HookContext, ResolutionDetails, Json, Json) -> Result[Unit, EvaluationError])?
+  error : ((HookContext, EvaluationError, Json, Json) -> Result[Unit, EvaluationError])?
+  on_finally : ((HookContext, Json, Json) -> Result[Unit, EvaluationError])?
+  data_factory : (() -> Json)?
+}
+pub fn Hook::new() -> Self
+pub fn Hook::with_after(Self, (HookContext, ResolutionDetails, Json, Json) -> Result[Unit, EvaluationError]) -> Self
+pub fn Hook::with_before(Self, (HookContext, Json, Json) -> Result[HookBeforeResult, EvaluationError]) -> Self
+pub fn Hook::with_data_factory(Self, () -> Json) -> Self
+pub fn Hook::with_error(Self, (HookContext, EvaluationError, Json, Json) -> Result[Unit, EvaluationError]) -> Self
+pub fn Hook::with_finally(Self, (HookContext, Json, Json) -> Result[Unit, EvaluationError]) -> Self
+
+pub struct HookBeforeResult {
+  context_changes : EvaluationContext
+  data : Json
+}
+pub fn HookBeforeResult::new(EvaluationContext, Json) -> Self
+
+pub struct HookContext {
+  flag_key : String
+  value_type : ValueType
+  default_value : FlagValue
+  evaluation_context : EvaluationContext
+}
+pub fn HookContext::default_value(Self) -> FlagValue
+pub fn HookContext::evaluation_context(Self) -> EvaluationContext
+pub fn HookContext::flag_key(Self) -> String
+pub fn HookContext::value_type(Self) -> ValueType
 
 pub struct ProviderEvent {
   kind : ProviderEventKind
@@ -214,6 +268,16 @@ pub fn ValueType::not_equal(Self, Self) -> Bool
 pub fn ValueType::to_repr(Self) -> @debug.Repr
 
 // Type aliases
+pub type AfterHook = (HookContext, ResolutionDetails, Json, Json) -> Result[Unit, EvaluationError]
+
+pub type BeforeHook = (HookContext, Json, Json) -> Result[HookBeforeResult, EvaluationError]
+
+pub type ErrorHook = (HookContext, EvaluationError, Json, Json) -> Result[Unit, EvaluationError]
+
+pub type FinallyHook = (HookContext, Json, Json) -> Result[Unit, EvaluationError]
+
+pub type HookDataFactory = () -> Json
+
 pub type ProviderEventHandler = (ProviderEvent) -> Result[Unit, EvaluationError]
 
 pub type ProviderEventSink = (ProviderEvent) -> Unit
@@ -229,4 +293,5 @@ pub(open) trait Provider {
   fn resolve(Self, String, ValueType, EvaluationContext) -> Result[ProviderResolution, EvaluationError]
   fn subscribe_events(Self, (ProviderEvent) -> Unit) -> Int32 = _
   fn unsubscribe_events(Self, Int32) -> Unit = _
+  fn evaluation_hooks(Self) -> Array[Hook] = _
 }

@@ -18,6 +18,7 @@ pub(open) trait Provider {
   ]
   fn subscribe_events(Self, ProviderEventSink) -> Int32 = _
   fn unsubscribe_events(Self, Int32) -> Unit = _
+  fn evaluation_hooks(Self) -> Array[Hook] = _
 }
 
 ///|
@@ -28,4 +29,9 @@ impl Provider with fn subscribe_events(_self, _sink) {
 ///|
 impl Provider with fn unsubscribe_events(_self, _id) {
 
+}
+
+///|
+impl Provider with fn evaluation_hooks(_self) {
+  []
 }

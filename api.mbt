@@ -16,6 +16,9 @@ struct ApiState {
   client_event_handlers : Array[ClientEventHandlerEntry]
   event_handler_errors : Array[EvaluationError]
   next_event_handler_id : Int32
+  api_hooks : Array[ApiHookEntry]
+  hook_errors : Array[EvaluationError]
+  next_hook_id : Int32
 }
 
 ///|
@@ -30,6 +33,9 @@ fn ApiState::empty() -> ApiState {
     client_event_handlers: [],
     event_handler_errors: [],
     next_event_handler_id: 1,
+    api_hooks: [],
+    hook_errors: [],
+    next_hook_id: 1,
   }
 }
 
@@ -98,7 +104,12 @@ pub fn Api::remove_provider_for_domain(
 ///|
 /// Create a client using this API instance.
 pub fn Api::client(self : Api) -> Client {
-  { api: self, domain: None, context: @ref.Ref(EvaluationContext::empty()), }
+  {
+    api: self,
+    domain: None,
+    context: @ref.Ref(EvaluationContext::empty()),
+    hooks: @ref.Ref([]),
+  }
 }
 
 ///|
@@ -108,6 +119,7 @@ pub fn Api::client_for_domain(self : Api, domain : String) -> Client {
     api: self,
     domain: Some(domain),
     context: @ref.Ref(EvaluationContext::empty()),
+    hooks: @ref.Ref([]),
   }
 }
 

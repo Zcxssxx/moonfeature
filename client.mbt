@@ -4,6 +4,7 @@ pub struct Client {
   api : Api
   domain : String?
   context : @ref.Ref[EvaluationContext]
+  hooks : @ref.Ref[Array[(Int32, Hook)]]
 }
 
 ///|
@@ -71,39 +72,11 @@ fn Client::resolve(
   default_value : FlagValue,
   invocation_context : EvaluationContext,
 ) -> ResolutionDetails {
-  let context = self.merged_context(invocation_context)
-  match self.api.provider_for_domain(self.domain) {
-    None => fallback_details(flag_key, default_value, None)
-    Some(provider) =>
-      match provider.resolve(flag_key, default_value.value_type(), context) {
-        Ok(result) => {
-          let value = result.value()
-          if value.value_type() != default_value.value_type() {
-            fallback_details(
-              flag_key,
-              default_value,
-              Some(
-                EvaluationError::new(
-                  ErrorCode::TypeMismatch,
-                  "provider returned a value of the wrong type",
-                ),
-              ),
-            )
-          } else {
-            {
-              flag_key,
-              value,
-              variant: result.variant(),
-              reason: result.reason(),
-              flag_metadata: result.flag_metadata(),
-              error_code: None,
-              error_message: None,
-            }
-          }
-        }
-        Err(error) => fallback_details(flag_key, default_value, Some(error))
-      }
-  }
+  self.resolve_with_options(
+    flag_key,
+    default_value,
+    EvaluationOptions::new(invocation_context),
+  )
 }
 
 ///|
@@ -132,6 +105,38 @@ pub fn Client::get_boolean_details(
 }
 
 ///|
+/// Evaluate a Boolean flag with explicit per-call hooks and hints.
+pub fn Client::get_boolean_details_with_options(
+  self : Client,
+  flag_key : String,
+  default_value : Bool,
+  options : EvaluationOptions,
+) -> ResolutionDetails {
+  self.resolve_with_options(
+    flag_key,
+    FlagValue::Boolean(default_value),
+    options,
+  )
+}
+
+///|
+/// Evaluate a Boolean flag with options and return only its value.
+pub fn Client::get_boolean_value_with_options(
+  self : Client,
+  flag_key : String,
+  default_value : Bool,
+  options : EvaluationOptions,
+) -> Bool {
+  match
+    self
+    .get_boolean_details_with_options(flag_key, default_value, options)
+    .value() {
+    FlagValue::Boolean(value) => value
+    _ => default_value
+  }
+}
+
+///|
 /// Evaluate a Number flag and return the caller's default on failure.
 pub fn Client::get_number_value(
   self : Client,
@@ -154,6 +159,34 @@ pub fn Client::get_number_details(
   context : EvaluationContext,
 ) -> ResolutionDetails {
   self.resolve(flag_key, FlagValue::Number(default_value), context)
+}
+
+///|
+/// Evaluate a Number flag with explicit per-call hooks and hints.
+pub fn Client::get_number_details_with_options(
+  self : Client,
+  flag_key : String,
+  default_value : Double,
+  options : EvaluationOptions,
+) -> ResolutionDetails {
+  self.resolve_with_options(flag_key, FlagValue::Number(default_value), options)
+}
+
+///|
+/// Evaluate a Number flag with options and return only its value.
+pub fn Client::get_number_value_with_options(
+  self : Client,
+  flag_key : String,
+  default_value : Double,
+  options : EvaluationOptions,
+) -> Double {
+  match
+    self
+    .get_number_details_with_options(flag_key, default_value, options)
+    .value() {
+    FlagValue::Number(value) => value
+    _ => default_value
+  }
 }
 
 ///|
@@ -182,6 +215,34 @@ pub fn Client::get_string_details(
 }
 
 ///|
+/// Evaluate a String flag with explicit per-call hooks and hints.
+pub fn Client::get_string_details_with_options(
+  self : Client,
+  flag_key : String,
+  default_value : String,
+  options : EvaluationOptions,
+) -> ResolutionDetails {
+  self.resolve_with_options(flag_key, FlagValue::String(default_value), options)
+}
+
+///|
+/// Evaluate a String flag with options and return only its value.
+pub fn Client::get_string_value_with_options(
+  self : Client,
+  flag_key : String,
+  default_value : String,
+  options : EvaluationOptions,
+) -> String {
+  match
+    self
+    .get_string_details_with_options(flag_key, default_value, options)
+    .value() {
+    FlagValue::String(value) => value
+    _ => default_value
+  }
+}
+
+///|
 /// Evaluate a JSON flag and return the caller's default on failure.
 pub fn Client::get_json_value(
   self : Client,
@@ -205,6 +266,33 @@ pub fn Client::get_json_details(
   context : EvaluationContext,
 ) -> ResolutionDetails {
   self.resolve(flag_key, FlagValue::Json(default_value), context)
+}
+
+///|
+/// Evaluate a JSON flag with explicit per-call hooks and hints.
+pub fn Client::get_json_details_with_options(
+  self : Client,
+  flag_key : String,
+  default_value : Json,
+  options : EvaluationOptions,
+) -> ResolutionDetails {
+  self.resolve_with_options(flag_key, FlagValue::Json(default_value), options)
+}
+
+///|
+/// Evaluate a JSON flag with options and return only its value.
+pub fn Client::get_json_value_with_options(
+  self : Client,
+  flag_key : String,
+  default_value : Json,
+  options : EvaluationOptions,
+) -> Json {
+  let fallback = clone_json(default_value)
+  match
+    self.get_json_details_with_options(flag_key, default_value, options).value() {
+    FlagValue::Json(value) => value
+    _ => fallback
+  }
 }
 
 ///|

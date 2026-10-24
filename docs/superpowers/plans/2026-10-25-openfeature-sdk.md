@@ -83,11 +83,11 @@
 
 **Files:** `hooks.mbt`, `evaluation.mbt`, `hooks_test.mbt`.
 
-- [ ] First test API/client/invocation/provider scope ordering, context updates, reverse after/error/finally order, per-hook data, and before/after/provider/error/finally failures.
-- [ ] Run tests and confirm missing behavior failure.
-- [ ] Implement typed callbacks: before/after/provider failures return caller default and invoke error/finally; error/finally failures remain contained while later callbacks at that stage still run.
-- [ ] Assert callback trace order and provider-skip behavior after a before failure.
-- [ ] Run suite and commit hooks separately.
+- [x] First test API/client/invocation/provider scope ordering, context updates, reverse after/error/finally order, per-hook data, and before/after/provider/error/finally failures.
+- [x] Run tests and confirm missing behavior failure.
+- [x] Implement typed callbacks: before/after/provider failures return caller default and invoke error/finally; error/finally failures remain contained while later callbacks at that stage still run.
+- [x] Assert callback trace order and provider-skip behavior after a before failure.
+- [x] Run suite and commit hooks separately.
 
 ## Task 7: Deterministic local rules provider
 
